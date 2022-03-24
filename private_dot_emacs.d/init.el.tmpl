@@ -1,0 +1,106 @@
+(setq custom-file "~/.emacs.d/customizations.el")
+(ignore-errors (load custom-file))
+
+(setq user-full-name "Andrew Shugarts")
+;; Template according to system in chezmoi
+(setq user-mail-address {{ .email | quote }})
+
+(require 'package)
+
+;; Internet repositories for new packages.
+(setq package-archives '(("gnu"    . "http://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("melpa"  . "http://melpa.org/packages/")))
+
+;; Update local list of available packages:
+;; Get descriptions of all configured ELPA packages,
+;; and make them available for download.
+(package-refresh-contents)
+
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(require 'use-package)
+
+(setq use-package-always-ensure t)
+
+(use-package auto-package-update
+  :config
+  ;; Delete residual old versions
+  (setq auto-package-update-delete-old-versions t)
+  ;; Do not bother me when updates have taken place.
+  (setq auto-package-update-hide-results t)
+  ;; Update installed packages at startup if there is an update pending.
+  (auto-package-update-maybe))
+
+;; Beautify my setup
+(use-package nord-theme
+  :init
+  (load-theme 'nord))
+
+;; Disable shit I don't care about
+(setq inhibit-startup-screen t)
+
+(use-package emacs
+  :init
+  (global-visual-line-mode 1)
+  (tool-bar-mode -1)
+  (setq ring-bell-function 'ignore)
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
+	backup-by-copying t    ; Don't delink hardlinks
+	version-control t      ; Use version numbers on backups
+	delete-old-versions t  ; Automatically delete excess backups
+	kept-new-versions 20   ; how many of the newest versions to keep
+	kept-old-versions 5)   ; and how many of the old
+  (setq-default indent-tabs-mode nil))
+
+(use-package chezmoi)
+
+(use-package helm
+  :config
+  (require 'helm-config)
+  (setq completion-styles '(flex))
+  
+  ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+  ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+  ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+  (global-set-key (kbd "C-c h") 'helm-command-prefix)
+  (global-unset-key (kbd "C-x c"))
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
+  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+  
+  (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+        helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+        helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+        helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+        helm-ff-file-name-history-use-recentf t
+        helm-echo-input-in-header-line t)
+  
+  (setq helm-autoresize-max-height 0)
+  (setq helm-autoresize-min-height 20)
+  (helm-autoresize-mode 1)
+
+  ;; Key bindings
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  (global-set-key (kbd "C-x b") 'helm-mini)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+  (helm-mode 1))
+
+(use-package magit)
+
+(use-package undo-tree
+  :defer 5
+  :init
+  (global-undo-tree-mode 1)
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+
+;; Making it easier to discover Emacs key presses.
+(use-package which-key
+  :diminish
+  :config (which-key-mode)
+          (which-key-setup-side-window-bottom)
+          (setq which-key-idle-delay 0.05))
