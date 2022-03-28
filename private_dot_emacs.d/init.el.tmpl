@@ -37,7 +37,7 @@
   :init
   (load-theme 'nord))
 
-;; Disable shit I don't care about
+;; Disable the startup screen because I'm okay without the help now
 (setq inhibit-startup-screen t)
 
 (use-package emacs
@@ -54,7 +54,44 @@
 	kept-old-versions 5)   ; and how many of the old
   (setq-default indent-tabs-mode nil))
 
+;; This convenience packages is basically a super-charged other-window (C-x b)
+(use-package ace-window
+  :init
+  (global-set-key (kbd "M-o") 'ace-window))
+
+;; Make sure we have chezmoi-mode available since we manage all of our dotfiles with it
 (use-package chezmoi)
+
+(use-package company
+  :init
+  (setq company-backends '(company-capf
+                         company-keywords
+                         company-semantic
+                         company-files
+                         ;; company-etags
+                         company-elisp
+                         company-clang
+                         ;; company-irony-c-headers
+                         ;; company-irony
+                         ;; company-jedi
+                         company-cmake
+                         company-ispell
+                         company-yasnippet))
+  (global-company-mode)
+  :bind
+  ("C-." . company-complete))
+(use-package helm-company
+   :ensure t
+   :after (helm company)
+   :bind (("C-c C-;" . helm-company))
+   :commands (helm-company)
+   :init
+   (define-key company-mode-map (kbd "C-;") 'helm-company)
+   (define-key company-active-map (kbd "C-;") 'helm-company))
+
+(use-package dtrt-indent
+  :init
+  (dtrt-indent-global-mode))
 
 (use-package helm
   :config
@@ -90,7 +127,26 @@
 
   (helm-mode 1))
 
+;; Magit is definitely a super power package of Emacs and I couldn't live without it
 (use-package magit)
+
+;; Can't avoid the power of an LSP when working with a lot of programming languages now
+(use-package lsp-mode
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :hook
+  (lsp-mode . lsp-enable-which-key-integration)
+  :commands lsp)
+
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+
+(use-package rainbow-blocks
+  :init
+  (global-rainbow-blocks-mode))
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 (use-package undo-tree
   :defer 5
