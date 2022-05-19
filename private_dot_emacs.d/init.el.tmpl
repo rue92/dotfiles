@@ -52,12 +52,17 @@
 	delete-old-versions t  ; Automatically delete excess backups
 	kept-new-versions 20   ; how many of the newest versions to keep
 	kept-old-versions 5)   ; and how many of the old
-  (setq-default indent-tabs-mode nil))
+  (setq-default indent-tabs-mode nil)
+  :delight
+  (visual-line-mode)
+  (global-visual-line-mode))
 
 ;; This convenience packages is basically a super-charged other-window (C-x b)
 (use-package ace-window
   :init
   (global-set-key (kbd "M-o") 'ace-window))
+
+(use-package delight)
 
 ;; Make sure we have chezmoi-mode available since we manage all of our dotfiles with it
 (use-package chezmoi)
@@ -91,7 +96,8 @@
 
 (use-package dtrt-indent
   :init
-  (dtrt-indent-global-mode))
+  (dtrt-indent-global-mode)
+  :delight)
 
 (use-package helm
   :config
@@ -142,21 +148,32 @@
 (use-package helm-lsp :commands helm-lsp-workspace-symbol)
 
 (use-package rainbow-blocks
-  :init
-  (global-rainbow-blocks-mode))
+  :init  
+  (global-rainbow-blocks-mode)
+  :delight)
 (use-package rainbow-delimiters
   :hook
-  (prog-mode . rainbow-delimiters-mode))
+  (prog-mode . rainbow-delimiters-mode)
+  :delight)
+
+(use-package org)
+(use-package org-bullets
+  :after org
+  :hook
+  (org-mode . org-bullets-mode))
 
 (use-package undo-tree
   :defer 5
   :init
   (global-undo-tree-mode 1)
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+  :delight
+  (global-undo-tree-mode)
+  (undo-tree-mode))
 
 ;; Making it easier to discover Emacs key presses.
 (use-package which-key
-  :diminish
+  :delight
   :config (which-key-mode)
           (which-key-setup-side-window-bottom)
           (setq which-key-idle-delay 0.05))
