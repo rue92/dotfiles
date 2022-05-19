@@ -147,6 +147,9 @@
 (use-package lsp-ui :commands lsp-ui-mode)
 (use-package helm-lsp :commands helm-lsp-workspace-symbol)
 
+(use-package projectile
+  :delight '(:eval (concat " " (projectile-project-name))))
+
 (use-package rainbow-blocks
   :init  
   (global-rainbow-blocks-mode)
