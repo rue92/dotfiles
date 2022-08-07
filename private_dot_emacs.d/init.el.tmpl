@@ -62,10 +62,13 @@
   :init
   (global-set-key (kbd "M-o") 'ace-window))
 
-(use-package delight)
+(use-package beacon
+  :init
+  (beacon-mode 1))
 
 ;; Make sure we have chezmoi-mode available since we manage all of our dotfiles with it
-(use-package chezmoi)
+(use-package chezmoi
+  :bind (("C-c C-\\" . chezmoi-find)))
 
 (use-package company
   :init
@@ -93,6 +96,8 @@
    :init
    (define-key company-mode-map (kbd "C-;") 'helm-company)
    (define-key company-active-map (kbd "C-;") 'helm-company))
+
+(use-package delight)
 
 (use-package dtrt-indent
   :init
@@ -148,6 +153,11 @@
 (use-package helm-lsp :commands helm-lsp-workspace-symbol)
 
 (use-package projectile
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("s-p" . projectile-command-map)
+              ("C-c p" . projectile-command-map))
   :delight '(:eval (concat " " (projectile-project-name))))
 
 (use-package rainbow-blocks
@@ -159,7 +169,9 @@
   (prog-mode . rainbow-delimiters-mode)
   :delight)
 
-(use-package org)
+(use-package org
+  :hook
+  (org-mode . flyspell-mode))
 (use-package org-bullets
   :after org
   :hook
@@ -180,3 +192,10 @@
   :config (which-key-mode)
           (which-key-setup-side-window-bottom)
           (setq which-key-idle-delay 0.05))
+
+;; Programming-language specific things start here
+
+;; Rust and its associated goodies
+(use-package cargo)
+(use-package rust-mode)
+(use-package rustic)
