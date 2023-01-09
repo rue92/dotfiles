@@ -84,6 +84,22 @@
   (defun ars/text-scale-reset ()
     (interactive)
     (text-scale-set 0))
+  (defun bury-compile-buffer-if-successful (buffer string)
+    "Bury a compilation buffer if succeeded without warnings "
+    (when (and
+           (buffer-live-p buffer)
+           (string-match "compilation" (buffer-name buffer))
+           (string-match "finished" string)
+           (not
+            (with-current-buffer buffer
+              (goto-char (point-min))
+              (search-forward "warning" nil t))))
+      (run-with-timer 1 nil
+                      (lambda (buf)
+                        (bury-buffer buf)
+                        (switch-to-prev-buffer (get-buffer-window buf) 'kill))
+                      buffer)))
+  (add-hook 'compilation-finish-functions 'bury-compile-buffer-if-successful)
   :delight
   (visual-line-mode)
   (global-visual-line-mode)
@@ -107,6 +123,7 @@
 
 (use-package company
   :init
+  (use-package slime-company)
   (setq company-backends '(company-capf
                          company-keywords
                          company-semantic
@@ -114,6 +131,7 @@
                          ;; company-etags
                          company-elisp
                          company-clang
+                         company-slime
                          ;; company-irony-c-headers
                          ;; company-irony
                          ;; company-jedi
@@ -126,14 +144,6 @@
 (use-package company-posframe
   :init
   (company-posframe-mode 1))
-(use-package helm-company
-   :ensure t
-   :after (helm company)
-   :bind (("C-c C-;" . helm-company))
-   :commands (helm-company)
-   :init
-   (define-key company-mode-map (kbd "C-;") 'helm-company)
-   (define-key company-active-map (kbd "C-;") 'helm-company))
 
 (use-package delight)
 
@@ -143,6 +153,7 @@
   :delight)
 
 (use-package helm
+  :disabled
   :config
   (require 'helm-config)
   (setq completion-styles '(flex))
@@ -175,6 +186,26 @@
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
 
   (helm-mode 1))
+(use-package helm-company
+  :disabled
+  :ensure t
+  :after (helm company)
+  :bind (("C-c C-;" . helm-company))
+  :commands (helm-company)
+  :init
+  (define-key company-mode-map (kbd "C-;") 'helm-company)
+  (define-key company-active-map (kbd "C-;") 'helm-company))
+
+(use-package ivy
+  :config
+  (setq ivy-use-virtual-buffers t
+        ivy-count-format "%d/%d "))
+(use-package ivy-posframe)
+(use-package counsel
+  :bind
+  (("M-x" . counsel-M-x)
+   ("C-x C-f" . counsel-find-file)))
+
 
 ;; Magit is definitely a super power package of Emacs and I couldn't live without it
 (use-package magit)
@@ -211,11 +242,34 @@
 
 (use-package org
   :hook
-  (org-mode . flyspell-mode))
+  (org-mode . flyspell-mode)
+  :init
+  ;; Shit to make org-mode output pretty listings in PDFs
+  (add-to-list 'org-latex-packages-alist '("" "minted"))
+  (setq org-latex-listings 'minted) 
+
+  (setq org-latex-pdf-process
+        '("latexmk -shell-escape -interaction=nonstopmode -output-directory=%o %f"))
+
+  (setq org-src-fontify-natively t)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((powershell . t)
+     (shell . t)
+     (latex . t))))
 (use-package org-bullets
   :after org
   :hook
   (org-mode . org-bullets-mode))
+
+(use-package slime
+  :custom
+  ((inferior-lisp-program "sbcl")))
+(use-package slime-company
+  :after (slime company)
+  :config (setq slime-company-completion 'fuzzy
+                slime-company-after-completion 'slime-company-just-one-space))
 
 (use-package undo-tree
   :defer 5
@@ -239,3 +293,6 @@
 (use-package cargo)
 (use-package rust-mode)
 (use-package rustic)
+
+;; YAML
+(use-package yaml-mode)
