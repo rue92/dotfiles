@@ -42,7 +42,7 @@
   (defvar my:theme-terminal-loaded nil)
 
   (if (daemonp)
-      (add-hook 'after-make-frame-functions(lambda (frame)
+      (add-hook 'after-make-frame-functions (lambda (frame)
                                              (select-frame frame)
                                              (if (window-system frame)
                                                  (unless my:theme-window-loaded
@@ -151,6 +151,39 @@
   :init
   (dtrt-indent-global-mode)
   :delight)
+
+(use-package counsel
+  :after ivy
+  :config (counsel-mode))
+
+(use-package ivy
+  :defer 0.1
+  :diminish
+  :bind (("C-c C-r" . ivy-resume)
+         ("C-x B" . ivy-switch-buffer-other-window))
+  :custom
+  (ivy-count-format "(%d/%d) ")
+  (ivy-use-virtual-buffers t)
+  :config (ivy-mode))
+
+(use-package ivy-rich
+  :after ivy
+  :custom
+  (ivy-virtual-abbreviate 'full
+                          ivy-rich-switch-buffer-align-virtual-buffer t
+                          ivy-rich-path-style 'abbrev)
+  :config
+  (ivy-set-display-transformer 'ivy-switch-buffer
+                               'ivy-rich-switch-buffer-transformer))
+
+(use-package counsel-projectile
+  :init
+  (counsel-projectile-mode))
+
+(use-package swiper
+  :after ivy
+  :bind (("C-s" . swiper)
+         ("C-r" . swiper)))
 
 (use-package helm
   :disabled
@@ -287,7 +320,15 @@
           (which-key-setup-side-window-bottom)
           (setq which-key-idle-delay 0.05))
 
+(defun ars/swap-ts-mode ()
+  (interactive)
+  (if
+      (string-search "-ts-mode" (symbol-name major-mode))
+      (funcall (intern (string-replace "-ts-mode" "-mode" (symbol-name major-mode))))
+    (funcall (intern (string-replace "-mode" "-ts-mode" (symbol-name major-mode))))))
+
 ;; Programming-language specific things start here
+(setq treesit-extra-load-path '("/usr/local/lib/tree-sitter"))
 
 ;; Rust and its associated goodies
 (use-package cargo)
