@@ -80,6 +80,7 @@
 	delete-old-versions t  ; Automatically delete excess backups
 	kept-new-versions 20   ; how many of the newest versions to keep
 	kept-old-versions 5)   ; and how many of the old
+  (remove-hook 'after-init-hook #'debian-ispell-set-startup-menu)
   (setq-default indent-tabs-mode nil)
   (defun ars/text-scale-reset ()
     (interactive)
@@ -100,6 +101,7 @@
                         (switch-to-prev-buffer (get-buffer-window buf) 'kill))
                       buffer)))
   (add-hook 'compilation-finish-functions 'bury-compile-buffer-if-successful)
+  (run-at-time "5 min" 300 'recentf-save-list)
   :delight
   (visual-line-mode)
   (global-visual-line-mode)
@@ -171,10 +173,7 @@
   :custom
   (ivy-virtual-abbreviate 'full
                           ivy-rich-switch-buffer-align-virtual-buffer t
-                          ivy-rich-path-style 'abbrev)
-  :config
-  (ivy-set-display-transformer 'ivy-switch-buffer
-                               'ivy-rich-switch-buffer-transformer))
+                          ivy-rich-path-style 'abbrev))
 
 (use-package counsel-projectile
   :init
