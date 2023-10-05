@@ -1,0 +1,22 @@
+{{  if eq chezmoi.os "linux" -}}
+#!/bin/sh
+sudo apt install fish kitty ripgrep syncthing texlive
+# Development tools
+sudo apt install gcc libgcc autoconf make texinfo
+# Pretty much assume that I'll be building my own copy of emacs so
+# install all these development headers too
+sudo apt install \
+     libgccjit-11-dev \
+     libgtk-4-dev \
+     libdbus-1-dev \
+     libsystemd-dev \
+     libtree-sitter-dev \
+     libjansson-dev \
+     libharfbuzz-dev \
+     libwebp-dev \
+     librsvg2-dev \
+     libtiff-dev \
+     libjpeg-dev \
+     libpng-dev \
+     libxpm-dev
+{{ end -}}
