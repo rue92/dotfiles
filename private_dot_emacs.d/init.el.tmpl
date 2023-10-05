@@ -1,6 +1,3 @@
-(setq custom-file "~/.emacs.d/customizations.el")
-(ignore-errors (load custom-file))
-
 (setq user-full-name "Andrew Shugarts")
 ;; Template according to system in chezmoi
 (setq user-mail-address {{ .email | quote }})
@@ -121,7 +118,9 @@
 
 ;; Make sure we have chezmoi-mode available since we manage all of our dotfiles with it
 (use-package chezmoi
-  :bind (("C-c C-\\" . chezmoi-find)))
+  :bind (("C-c C-\\" . chezmoi-find))
+  :config
+  (setq chezmoi-command (expand-file-name "~/bin/chezmoi")))
 
 (use-package company
   :init
