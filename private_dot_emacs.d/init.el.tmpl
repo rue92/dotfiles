@@ -101,7 +101,7 @@
                         (switch-to-prev-buffer (get-buffer-window buf) 'kill))
                       buffer)))
   (add-hook 'compilation-finish-functions 'bury-compile-buffer-if-successful)
-  (run-at-time "5 min" 300 'recentf-save-list)
+  (run-at-time "5 min" 300 #'recentf-save-list)
   :delight
   (visual-line-mode)
   (global-visual-line-mode)
