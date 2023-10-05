@@ -1,8 +1,8 @@
-{{  if eq chezmoi.os "linux" -}}
+{{  if eq .chezmoi.os "linux" -}}
 #!/bin/sh
 sudo apt install fish kitty ripgrep syncthing texlive
 # Development tools
-sudo apt install gcc libgcc autoconf make texinfo
+sudo apt install gcc autoconf make texinfo
 # Pretty much assume that I'll be building my own copy of emacs so
 # install all these development headers too
 sudo apt install \
