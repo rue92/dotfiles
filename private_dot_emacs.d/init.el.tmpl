@@ -33,7 +33,11 @@
   (auto-package-update-maybe))
 
 ;; Beautify my setup
+(use-package starlit-theme
+  :init
+  (load-theme 'starlit))
 (use-package nord-theme
+  :disabled
   :init
   (load-theme 'nord)
   ;; All of this is to avoid problems that occur running Emacs as a daemon
