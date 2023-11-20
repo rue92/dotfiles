@@ -105,15 +105,21 @@
                         (switch-to-prev-buffer (get-buffer-window buf) 'kill))
                       buffer)))
   (add-hook 'compilation-finish-functions 'bury-compile-buffer-if-successful)
-  (run-at-time "5 min" 300 #'recentf-save-list)
   :delight
   (visual-line-mode)
   (global-visual-line-mode)
   :bind
   (("s-+" . text-scale-increase)
    ("s--" . text-scale-decrease)
-   ("s-0" . ars/text-scale-reset)
-   ("C-c TAB" . recentf)))
+   ("s-0" . ars/text-scale-reset)))
+
+;; Actually a built-in, but it's nice to be able to actually keep it separate
+(use-package recentf
+  :init
+  (recentf-mode)
+  (run-at-time nil 300 'recentf-save-list)
+  :bind
+  (("C-c TAB" . recentf)))
 
 ;; This convenience packages is basically a super-charged other-window (C-x b)
 (use-package ace-window
@@ -337,6 +343,9 @@
 
 ;; Programming-language specific things start here
 (setq treesit-extra-load-path '("/usr/local/lib/tree-sitter"))
+(use-package treesit-auto
+  :init
+  (global-treesit-auto-mode))
 
 ;; Rust and its associated goodies
 (use-package cargo)
