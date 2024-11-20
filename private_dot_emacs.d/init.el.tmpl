@@ -165,6 +165,12 @@
 
 (use-package delight)
 
+(use-package doct
+  :ensure t
+  :commands (doct)
+  :init
+  (require 'org-capture))
+
 (use-package dtrt-indent
   :init
   (dtrt-indent-global-mode)
@@ -293,10 +299,9 @@
 (use-package org
   :hook
   (org-mode . flyspell-mode)
-  :init
   ;; Shit to make org-mode output pretty listings in PDFs
   (add-to-list 'org-latex-packages-alist '("" "minted"))
-  (setq org-latex-listings 'minted) 
+  (setq org-latex-listings 'minted)
 
   (setq org-latex-pdf-process
         '("latexmk -shell-escape -interaction=nonstopmode -output-directory=%o %f"))
@@ -307,7 +312,10 @@
    'org-babel-load-languages
    '((powershell . t)
      (shell . t)
-     (latex . t))))
+     (latex . t)))
+  (defun ars/org-confirm-babel-evaluate (lang body)
+    (not (string= lang "emacs-lisp")))  ;don't ask for emacs-lisp
+  (setq org-confirm-babel-evaluate #'ars/org-confirm-babel-evaluate))
 (use-package org-bullets
   :after org
   :hook
