@@ -35,7 +35,7 @@
 ;; Beautify my setup
 (use-package starlit-theme
   :init
-  (load-theme 'starlit))
+  (load-theme 'starlit t))
 (use-package nord-theme
   :disabled
   :init
@@ -170,6 +170,20 @@
   :commands (doct)
   :init
   (require 'org-capture))
+
+(use-package org-templates
+  :after doct
+  :load-path "ars/"
+  :init
+  (setq org-capture-templates
+      (doct '(("Travel" :keys "T" :type entry :file "~/Org/org/Travel.org"
+               :contexts (:in-file ".*/Org/org/Travel\\.org$")
+               :jump-to-captured t :empty-lines-before 2
+               :empty-lines-after 1
+               :template-file "~/.emacs.d/ars/Travel_Template.tmpl.org"
+               :trip-title (lambda () (ars/read-trip-title))
+               :start-date (lambda () (ars/read-trip-start-date))
+               :packing-list (lambda () (ars/format-packing-object (ars/build-packing-list ars/packing-list (ars/read-trip-properties)) "")))))))
 
 (use-package dtrt-indent
   :init
